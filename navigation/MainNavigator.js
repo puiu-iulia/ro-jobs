@@ -1,6 +1,6 @@
 import React from 'react';
 import { Platform, Text } from 'react-native';
-import { createAppContainer } from 'react-navigation';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
@@ -11,7 +11,8 @@ import { createMaterialBottomTabNavigator} from 'react-navigation-material-botto
 import { AntDesign } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 
-import AuthScreen from '../screens/AuthScreen';
+import LoginScreen from '../screens/LoginScreen';
+import SignupScreen from '../screens/SignupScreen';
 import CreateAccountScreen from '../screens/CreateAccountScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import ProjectDetailsScreen from '../screens/ProjectDetailsScreen';
@@ -20,52 +21,63 @@ import SendOfferScreen from '../screens/SendOfferScreen';
 import OffersScreen from '../screens/OffersScreen';
 import ContractsScreen from '../screens/ContractsScreen';
 import MessagesScreen from '../screens/MessagesScreen';
+import HandleAuthScreen from '../screens/HandleAuthScreen';
+import SigninScreen from '../screens/LoginScreen';
+import AccountTypeScreen from '../screens/AccountTypeSceen';
 
-const defaultStackNavOptions = {
-    headerStyle: {
-        backgroundColor: 'fff'
-    },
-    // headerTitleStyle: {
-    //     fontFamily: 'open-sans-bold',
-    // },
-    // headerbackTitleStyle: {
-    //     fontFamily: 'open-sans',
-    // },
-    headerTintColor: '000'
-}
 
-const ProjectsNavigator = createStackNavigator(
+
+
+const projectsListFlow = createStackNavigator(
     {
         Projects: ProjectsScreen,
         ProjectDetails: ProjectDetailsScreen,
         SendOffer: SendOfferScreen
     }, {
         navigationOptions: {
-            drawerLabel: 'Toate Proiectele'
-        }, 
-        labelStyle: {
-            color: '#fff'
+            drawerLabel: 'Toate Proiectele', 
+            labelStyle: {
+                color: '#fff'
+            }
         }
     }
 );
+projectsListFlow.navigationOptions = {
+    title: 'Proiecte',
+    tabBarIcon: <AntDesign name="filetext1" size={24} color="#6e7c7d" />,
+    tabBarColor: '#1e9974'
+}
 
-const OffersNavigator = createStackNavigator(
+const offersListFlow = createStackNavigator(
     {
         Offers: OffersScreen
     }
 );
+offersListFlow.navigationOptions = {
+    title: 'Oferte',
+    tabBarIcon: <MaterialIcons name="local-offer" size={24}  color="#6e7c7d" />,
+}
 
-const ContractsNavigator = createStackNavigator(
+const contractsListFlow = createStackNavigator(
     {
         Contracts: ContractsScreen
     }
 );
+contractsListFlow.navigationOptions = {
+    title: 'Contracte',
+    tabBarIcon: <FontAwesome5 name="file-contract" size={24} color="#6e7c7d" />,
+}
 
-const MessagesNavigator = createStackNavigator(
+const messagesFlow = createStackNavigator(
     {
         Messages: MessagesScreen
     }
 );
+messagesFlow.navigationOptions = {
+    title: 'Mesaje',
+    tabBarIcon: <Entypo name="message" size={24} color="#6e7c7d" />,
+
+}
 
 const ProfileNavigator = createStackNavigator({
     Profile: ProfileScreen
@@ -78,78 +90,35 @@ const ProfileNavigator = createStackNavigator({
     }
 })
 
-const tabScreenConfig =  {
-    ProjectsTab: { 
-        screen: ProjectsNavigator,
-        navigationOptions: {
-            tabBarIcon: (tabInfo) => {
-                return (<AntDesign name="filetext1" size={24} color="#fff" />);
-            },
-            tabBarColor: '#1e9974',
-            // tabBarLabel: Platform.OS === 'android' ? <Text>Proiecte</Text> : 'Proiecte'
-            tabBarLabel: 'Proiecte'
-        }
-    },
-    OffersTab: {
-        screen: OffersNavigator,
-        navigationOptions: {
-            tabBarIcon: (tabInfo) => {
-                return (<MaterialIcons name="local-offer" size={24} color="#fff" />);
-            },
-            tabBarColor: '#1e9974',
-            //you can add style to the text label below
-            // tabBarLabel: Platform.OS === 'android' ? <Text>Oferte</Text> : 'Oferte'
-            tabBarLabel: 'Oferte'
-        }
-    },
-    ContractsTab: {
-        screen: ContractsNavigator,
-        navigationOptions: {
-            tabBarIcon: (tabInfo) => {
-                return (<FontAwesome5 name="file-contract" size={24} color="#fff" />);
-            },
-            tabBarColor: '#1e9974',
-            //you can add style to the text label below
-            tabBarLabel: Platform.OS === 'android' ? <Text>Contracte</Text> : 'Contracte'
-        }
-    },
-    MessagesTab: {
-        screen: MessagesNavigator,
-        navigationOptions: {
-            tabBarIcon: (tabInfo) => {
-                return (<Entypo name="message" size={24} color="#fff" />);
-            },
-            tabBarColor: '#1e9974',
-            //you can add style to the text label below
-            tabBarLabel: Platform.OS === 'android' ? <Text>Mesaje</Text> : 'Mesaje'
-        }
-    },
 
-}
+// mainFlow.navigationOptions = {
+//     tabBarOptions: {
+//         // labelStyle: {
+//         //     fontFamily: 'open-sans-bold'
+//         // },
+//         activeTintColor: '#fff'
+//     }
+// }
 
-const TabNavigator = 
-        Platform.OS === 'android' 
 
-        ? createMaterialBottomTabNavigator(tabScreenConfig, {
-            activeTintColor: '#fff',
-            shifting: true
-        }) 
+    const projectsFlow = createBottomTabNavigator({
+        projectsListFlow,
+        offersListFlow,
+        contractsListFlow,
+        messagesFlow
+    }, {
+        tabBarOptions: {
+            activeTintColor: '#1e9974'
+        } 
+    })
 
-        : createBottomTabNavigator(tabScreenConfig, {
-            tabBarOptions: {
-                // labelStyle: {
-                //     fontFamily: 'open-sans-bold'
-                // },
-                activeTintColor: '#fff'
-            }
-});
 
-const DrawerNavigator = createDrawerNavigator({
-    ProjectsOverview: TabNavigator,
+const profileFlow = createDrawerNavigator({
+    projectsList: projectsFlow,
     ProfileOverview:  ProfileNavigator
 }, 
 {
-    drawerBackgroundColor: '#1e9974',
+    drawerBackgroundColor: '#6e7c7d',
     contentOptions: {
         labelStyle: {
             color: '#fff'
@@ -163,5 +132,18 @@ const DrawerNavigator = createDrawerNavigator({
     }       
 })
 
+const mainAppContainer = createSwitchNavigator({
+    HandleAuth: HandleAuthScreen,
+    loginFlow: createStackNavigator({
+        Signup: SignupScreen,
+        Signin: SigninScreen,
+        AccountType: AccountTypeScreen
+    }),
+    mainFlow: projectsFlow,
+    profile: profileFlow,
 
-export default createAppContainer(DrawerNavigator);
+}, {
+    initialRouteName: 'loginFlow'
+})
+
+export default createAppContainer(mainAppContainer);
